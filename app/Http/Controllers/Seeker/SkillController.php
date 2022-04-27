@@ -51,9 +51,9 @@ class SkillController extends Controller
            
         ]);
         
-        $imageName = time().'.'.$request->image->extension();  
-        $request->image->move(public_path('images'), $imageName);
-        $skill = skill::create(['title'=>$request->title,'image'=>$imageName]);
+        //$imageName = time().'.'.$request->image->extension();  
+        //$request->image->move(public_path('images'), $imageName);
+        $skill = skill::create(['title'=>$request->title,]);//'image'=>$imageName
        
          return redirect('skills')->with('completed', 'it has been saved!');
     }

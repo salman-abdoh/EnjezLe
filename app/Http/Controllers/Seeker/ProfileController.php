@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
@@ -68,7 +69,7 @@ class ProfileController extends Controller
         $request->image->move(public_path('images'), $imageName);
         $profile = profile::create(['first_name'=>$request->first_name,'last_name'=>$request->last_name,
         'phone'=>$request->phone,'gander'=>$request->gander,
-        'country'=>$request->country,'major'=>$request->major,
+        'country'=>$request->country,'major'=>$request->major,'user_id'=>Auth::user()->id,
         'Job_title'=>$request->Job_title,'image'=>$imageName,'describe'=>$request->describe]);
        
          return redirect('personalinfo')->with('completed', 'it has been saved!');

@@ -8,10 +8,12 @@ use App\Http\Controllers\admin\CommentsController;
 use App\Http\Controllers\admin\offersController;
 use App\Http\Controllers\admin\complaintController;
 use App\Http\Controllers\website\ProjectsController;
-use App\Http\Controllers\providers\WorkController;
+use App\Http\Controllers\providers\WorksController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\logoutController;
-
+//seeker
+use App\Http\Controllers\Seeker\WorkController;
+use App\Http\Controllers\Seeker\ProfileController;
 use App\Http\Controllers\HomeController as ControllersHomeController;
 use App\Http\Controllers\website\LandPage;
 use App\Http\Controllers\Seeker\MainController;
@@ -122,7 +124,14 @@ Route::get('/admin/projects_report', [projectController::class, 'report'])->name
     Route::get('/new_project',[ProjectsController::class,'create']);
     Route::post('/save_project',[ProjectsController::class,'store']);
     /** end of project routes  */
-    
+    /**seeker workcontroller route */
+    Route::group(['prefix'=>'seeker','as'=>'seeker'], function(){
+      Route::resource('/works',WorkController::class);
+      Route::resource('/profile',ProfileController::class);
+      Route::resource('/skills',SkillController::class);
+      });
+
+
 });
 
  /**----------------------
@@ -133,6 +142,8 @@ Route::get('/admin/projects_report', [projectController::class, 'report'])->name
   
 Route::resource('/works',WorkController::class);
 });
+
+
 
 
 /**----------------------
@@ -198,3 +209,5 @@ Route::post('/changePassword', [ChangePasswordController::class, 'updatePassword
 // Route::get('/new_project',[ProjectsController::class,'create']);
 // Route::post('/save_project',[ProjectsController::class,'store']);
 /** end of project routes  */
+Route::get('/get-csrf-token', [WorkController::class, 'getCSRFToken']);
+

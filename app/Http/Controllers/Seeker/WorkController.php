@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Seeker;
+
 use App\Http\Controllers\Controller;
 use App\Models\work;
 use Error;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class WorkController extends Controller
@@ -16,8 +18,8 @@ class WorkController extends Controller
      */
     public function index()
     {
-        $work=work::where([['status',1]])->get();
-        return view('website.SeekerPanal.works.index',['data'=>$work]);
+        $work = work::where([['status', 1]])->get();
+        return view('website.SeekerPanal.works.index', ['data' => $work]);
     }
 
     /**
@@ -38,29 +40,30 @@ class WorkController extends Controller
      */
     public function store(Request $request)
     {
-        Validator::validate($request->all(),[
-            'title'=>['required','min:3','max:25'],
-            'describe'=>['required','min:70','max:250'],
-            'date_end'=>['required']
+        Validator::validate($request->all(), [
+            'title' => ['required', 'min:3', 'max:25'],
+            'describe' => ['required', 'min:70', 'max:250'],
+            'date_end' => ['required']
 
 
-        ],[
-            'title.required'=>'يرجى ادخال العنوان',
-            'title.min'=>'جب ان يكون العنوان اكبر من 3 حرف', 
-            'title.max'=>'يجب ان يكون العنوان اقل من 25 حرف', 
-            'describe.required'=>'يرجى ادخال الوصف',
-            'describe.min'=>'يجب ان يكون الوصف اكبر  من 70 حرف', 
-            'describe.max'=>'يجب ان يكون الوصف اقل من 250 حرف',
-            'date_end.required'=>'يرجى ادخال التاريخ',
+        ], [
+            'title.required' => 'يرجى ادخال العنوان',
+            'title.min' => 'جب ان يكون العنوان اكبر من 3 حرف',
+            'title.max' => 'يجب ان يكون العنوان اقل من 25 حرف',
+            'describe.required' => 'يرجى ادخال الوصف',
+            'describe.min' => 'يجب ان يكون الوصف اكبر  من 70 حرف',
+            'describe.max' => 'يجب ان يكون الوصف اقل من 250 حرف',
+            'date_end.required' => 'يرجى ادخال التاريخ',
 
-           
+
         ]);
-        
-        $imageName = time().'.'.$request->image->extension();  
+
+        $imageName = time() . '.' . $request->image->extension();
         $request->image->move(public_path('images'), $imageName);
-        $work = work::create(['title'=>$request->title,'date_end'=>$request->date_end,'image'=>$imageName,'describe'=>$request->describe]);
-       
-         return redirect('works')->with('completed', 'it has been saved!');
+        $work = work::create(['user_id'=>1,//Auth::user()->id,
+        'title' => $request->title, 'date_end' => $request->date_end, 'image' => $imageName, 'describe' => $request->describe]);
+
+        return redirect('works')->with('completed', 'it has been saved!');
     }
 
     /**
@@ -71,14 +74,14 @@ class WorkController extends Controller
      */
     public function show($id)
     {
-        $work=work::find($id);
-        return view('website.SeekerPanal.works.show',['data'=>$work]);
+        $work = work::find($id);
+        return view('website.SeekerPanal.works.show', ['data' => $work]);
     }
 
     public function edit($id)
     {
-        $work=work::find($id);
-        return view('website.SeekerPanal.works.edit',['data'=>$work]);
+        $work = work::find($id);
+        return view('website.SeekerPanal.works.edit', ['data' => $work]);
     }
     public function update(Request $request, $id)
     {
@@ -88,23 +91,25 @@ class WorkController extends Controller
         //   //  'image' => 'required',
         //     'status' => 'required',
         // ]);
-        if($request->image !=""){
-        $imageName = time().'.'.$request->image->extension();  
-        $request->image->move(public_path('images'), $imageName);
-        }else{
-            $imageName =$request->oldimg; 
+        if ($request->image != "") {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('images'), $imageName);
+        } else {
+            $imageName = $request->oldimg;
         }
-        $work = work::where('id',$id)->update(['title'=>$request->title,'date_end'=>$request->date_end,'image'=>$imageName,'describe'=>$request->describe]);
+        $work = work::where('id', $id)->update(['title' => $request->title, 'date_end' => $request->date_end, 'image' => $imageName, 'describe' => $request->describe]);
         return redirect('/works')->with('completed', ' ithas been saved!');
-
     }
 
-  
+
     public function destroy($id)
     {
-        $old=work::where('id',$id)->value('status');
-        work::where('id',$id)->update(['status'=>($old==1)? 0 :1]);
+        $old = work::where('id', $id)->value('status');
+        work::where('id', $id)->update(['status' => ($old == 1) ? 0 : 1]);
         return redirect('/works')->with('completed', 'it has been deleted');
-
     }
+    //Controller’s method inside HomeController class
+public function getCSRFToken(){
+    return csrf_token();
+}
 }
